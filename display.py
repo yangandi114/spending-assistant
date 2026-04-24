@@ -1,4 +1,5 @@
-# Authors: Yang Andi
+# Authors: Yang Andi, Mao Yicheng
+# Andi wrote all display functions; Mao Yicheng wrote print_outliers
 
 import calendar
 import os
@@ -29,7 +30,7 @@ console = Console()
 def print_header():
     t = Text(justify="center")
     t.append("💰  Personal Budget Assistant\n", style="bold cyan")
-    t.append("COMP1110 B12  ·  HKU  ·  2026", style="dim")
+    t.append("COMP1110  B12", style="dim")
     console.print(Panel(t, border_style="cyan", padding=(0, 4)))
 
 
@@ -258,17 +259,37 @@ def print_heatmap(transactions):
     console.print()
 
 
+# Written by Mao Yicheng
 def print_outliers(transactions):
+    """
+    Identify and display the highest spending transactions as a formatted table.
+    Uses the outlier detection logic to highlight the top 5% of expenses.
+    """
     outliers = get_spending_outliers(transactions)
+
     if not outliers:
+        console.print("[dim]No significant outliers found.[/dim]")
         return
-    table = Table(title="🚩 Significant Spendings (Top 5%)", box=box.SIMPLE_HEAVY, expand=False)
+
+    table = Table(
+        title="🚩 Significant Spendings (Top 5%)",
+        box=box.SIMPLE_HEAVY,
+        expand=False
+    )
+
     table.add_column("Date", style="magenta")
     table.add_column("Category", style="yellow")
     table.add_column("Amount", style="green", justify="right")
     table.add_column("Description")
+
     for t in outliers:
-        table.add_row(t["date"], t["category"], f"HK${t['amount']:.2f}", t["description"])
+        table.add_row(
+            t["date"],
+            t["category"],
+            f"HK${t['amount']:.2f}",
+            t["description"]
+        )
+
     console.print(table)
 
 

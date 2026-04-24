@@ -23,7 +23,7 @@ DEFAULT_CONFIG = {
 _ISO = {"HKD": "HKD", "CNY": "CNY", "JPY": "JPY", "KRW": "KRW",
         "NTD": "TWD", "USD": "USD", "GBP": "GBP", "EUR": "EUR"}
 
-
+# Fetch exchange rates from API and convert to HKD-based rates, written by Andi
 def fetch_exchange_rates():
     try:
         url = "https://open.er-api.com/v6/latest/HKD"

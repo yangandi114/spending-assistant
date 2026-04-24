@@ -1,5 +1,2 @@
-# COMP1110 Personal Budget & Spending Assistant
-# Minimal dependencies for beautiful terminal UI
-
 rich==13.7.0
 questionary==1.10.0

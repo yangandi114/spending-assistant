@@ -6,10 +6,12 @@ from datetime import datetime, timedelta
 
 
 def parse_date(date_str):
+    # Convert a date string (YYYY-MM-DD) into a datetime object.
     return datetime.strptime(date_str, "%Y-%m-%d")
 
 
 def filter_by_date(transactions, start=None, end=None):
+    # Filter the transaction list based on a specific start and end date range.
     result = []
     for t in transactions:
         d = parse_date(t["date"])
@@ -22,6 +24,7 @@ def filter_by_date(transactions, start=None, end=None):
 
 
 def get_totals_by_category(transactions, start=None, end=None):
+    # Aggregate total spending for each category within an optional date range.
     filtered = filter_by_date(transactions, start, end)
     totals = defaultdict(float)
     for t in filtered:
@@ -30,6 +33,7 @@ def get_totals_by_category(transactions, start=None, end=None):
 
 
 def get_top_n_categories(transactions, n=3, start=None, end=None):
+    # Identify the top N categories with the highest spending and calculate their percentage share.
     totals = get_totals_by_category(transactions, start, end)
     total = sum(totals.values())
     sorted_cats = sorted(totals.items(), key=lambda x: x[1], reverse=True)
@@ -40,6 +44,7 @@ def get_top_n_categories(transactions, n=3, start=None, end=None):
 
 
 def get_spending_trends(transactions):
+    # Compare average daily spending from the last 7 days vs. the last 30 days.
     now = datetime.now()
     last_7 = filter_by_date(transactions, now - timedelta(days=7), now)
     last_30 = filter_by_date(transactions, now - timedelta(days=30), now)
@@ -49,6 +54,7 @@ def get_spending_trends(transactions):
 
 
 def get_daily_totals_by_category(transactions, category):
+    # Map out total spending per day for a specific category.
     daily = defaultdict(float)
     for t in transactions:
         if t["category"] == category:
@@ -57,6 +63,7 @@ def get_daily_totals_by_category(transactions, category):
 
 
 def get_consecutive_overspend(transactions, category, daily_cap):
+    # Calculate the number of consecutive days the user has exceeded their daily cap for a category.
     daily = get_daily_totals_by_category(transactions, category)
     sorted_dates = sorted(daily.keys(), reverse=True)
     streak = 0
@@ -69,6 +76,7 @@ def get_consecutive_overspend(transactions, category, daily_cap):
 
 
 def get_savings_progress(transactions, savings_goal, income):
+    # Calculate current month's outflow, surplus, and progress toward a savings target.
     now = datetime.now()
     start = datetime(now.year, now.month, 1)
     monthly = filter_by_date(transactions, start, now)
@@ -79,6 +87,7 @@ def get_savings_progress(transactions, savings_goal, income):
 
 
 def linear_forecast(transactions):
+    # Predict total spending for the current month using linear projection based on daily average.
     now = datetime.now()
     start = datetime(now.year, now.month, 1)
     monthly = filter_by_date(transactions, start, now)
@@ -91,6 +100,7 @@ def linear_forecast(transactions):
 
 
 def spending_heatmap(transactions):
+    # Generate a heatmap visualization data by comparing daily spending to the monthly average.
     now = datetime.now()
     start = datetime(now.year, now.month, 1)
     monthly = filter_by_date(transactions, start, now)
@@ -119,6 +129,7 @@ def spending_heatmap(transactions):
 
 
 def get_spending_outliers(transactions, top_percent=0.05):
+    # Retrieve the top X% (default 5%) of transactions by amount to identify major expenses.
     if not transactions:
         return []
     ordered = sorted(transactions, key=lambda x: x["amount"], reverse=True)
