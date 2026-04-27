@@ -9,8 +9,8 @@ from analytics import (
 )
 
 
+# Check if today's spending in any category went over the daily cap.
 def check_daily_caps(transactions, budget_rules):
-    """Check if daily spending in any category exceeds the user-defined cap."""
     today = datetime.now().strftime("%Y-%m-%d")
     alerts = []
     for rule in budget_rules:
@@ -31,8 +31,8 @@ def check_daily_caps(transactions, budget_rules):
     return alerts
 
 
+# Flag categories that take up too much of the total spending.
 def check_percentage_thresholds(transactions, budget_rules):
-    """Identify categories that consume a larger share of total spending than allowed."""
     totals = get_totals_by_category(transactions)
     total = sum(totals.values())
     alerts = []
@@ -55,8 +55,8 @@ def check_percentage_thresholds(transactions, budget_rules):
     return alerts
 
 
+# Warn if a category has been over-budget for 3+ days in a row.
 def check_consecutive_overspend(transactions, budget_rules):
-    """Track and alert if a user exceeds the budget for several consecutive days."""
     alerts = []
     for rule in budget_rules:
         cap = rule.get("daily_cap")
@@ -74,13 +74,12 @@ def check_consecutive_overspend(transactions, budget_rules):
     return alerts
 
 
+# Project this month's total spend and warn early if we're heading over budget.
 def check_forecast_alerts(transactions, budget_rules):
-    """
-    Predict end-of-month spending and alert if the trend exceeds the budget.
-    Provides a proactive warning rather than a reactive one.
-    """
+    monthly_limit = sum(r["monthly_cap"] for r in budget_rules if "monthly_cap" in r)
+    if monthly_limit <= 0:
+        return []
     projected_total = linear_forecast(transactions)
-    monthly_limit = 5000
     alerts = []
     if projected_total > monthly_limit:
         alerts.append({
@@ -90,8 +89,8 @@ def check_forecast_alerts(transactions, budget_rules):
     return alerts
 
 
+# Find transactions with missing or unknown categories.
 def check_uncategorized(transactions, categories):
-    """Audit transactions to ensure every record belongs to a valid category."""
     alerts = []
     for t in transactions:
         cat = t.get("category", "Uncategorized")
@@ -105,8 +104,8 @@ def check_uncategorized(transactions, categories):
     return alerts
 
 
+# Collect all alerts into one list for display.
 def get_all_alerts(transactions, budget_rules, categories):
-    """Aggregate all types of alerts into a single list for the display module."""
     alerts = []
     alerts += check_daily_caps(transactions, budget_rules)
     alerts += check_percentage_thresholds(transactions, budget_rules)

@@ -259,12 +259,8 @@ def print_heatmap(transactions):
     console.print()
 
 
-# Written by Mao Yicheng
+# Show the top 5% biggest transactions as a table — written by Mao Yicheng.
 def print_outliers(transactions):
-    """
-    Identify and display the highest spending transactions as a formatted table.
-    Uses the outlier detection logic to highlight the top 5% of expenses.
-    """
     outliers = get_spending_outliers(transactions)
 
     if not outliers:
@@ -305,40 +301,40 @@ def export_report(transactions, budget_rules, categories, config, filename=None)
     top = get_top_n_categories(monthly, 3)
     alerts = get_all_alerts(transactions, budget_rules, categories)
 
-    fc = Console(file=open(filename, "w", encoding="utf-8"), no_color=True, width=72)
-    fc.print("=" * 72)
-    fc.print("   MONTHLY SPENDING SUMMARY REPORT")
-    fc.print(f"   {now.strftime('%B %Y')}   (generated {now.strftime('%Y-%m-%d %H:%M')})")
-    fc.print("=" * 72)
+    with open(filename, "w", encoding="utf-8") as f:
+        fc = Console(file=f, no_color=True, width=72)
+        fc.print("=" * 72)
+        fc.print("   MONTHLY SPENDING SUMMARY REPORT")
+        fc.print(f"   {now.strftime('%B %Y')}   (generated {now.strftime('%Y-%m-%d %H:%M')})")
+        fc.print("=" * 72)
 
-    fc.print("\nSPENDING BY CATEGORY")
-    fc.print("-" * 40)
-    for cat, amt in sorted(totals.items(), key=lambda x: x[1], reverse=True):
-        pct = (amt / total * 100) if total > 0 else 0
-        fc.print(f"  {cat:<16} HK${amt:>8.2f}   {pct:>5.1f}%")
-    fc.print(f"  {'TOTAL':<16} HK${total:>8.2f}")
+        fc.print("\nSPENDING BY CATEGORY")
+        fc.print("-" * 40)
+        for cat, amt in sorted(totals.items(), key=lambda x: x[1], reverse=True):
+            pct = (amt / total * 100) if total > 0 else 0
+            fc.print(f"  {cat:<16} HK${amt:>8.2f}   {pct:>5.1f}%")
+        fc.print(f"  {'TOTAL':<16} HK${total:>8.2f}")
 
-    fc.print("\nSPENDING TRENDS")
-    fc.print("-" * 40)
-    fc.print(f"  7-day avg:    HK${avg_7:.2f}/day")
-    fc.print(f"  30-day avg:   HK${avg_30:.2f}/day")
-    if avg_30 > 0:
-        diff = (avg_7 - avg_30) / avg_30 * 100
-        fc.print(f"  Trend:        {'+' if diff >= 0 else ''}{diff:.1f}%")
+        fc.print("\nSPENDING TRENDS")
+        fc.print("-" * 40)
+        fc.print(f"  7-day avg:    HK${avg_7:.2f}/day")
+        fc.print(f"  30-day avg:   HK${avg_30:.2f}/day")
+        if avg_30 > 0:
+            diff = (avg_7 - avg_30) / avg_30 * 100
+            fc.print(f"  Trend:        {'+' if diff >= 0 else ''}{diff:.1f}%")
 
-    fc.print("\nTOP 3 CATEGORIES")
-    fc.print("-" * 40)
-    for i, (cat, amt, pct) in enumerate(top, 1):
-        fc.print(f"  {i}. {cat}: HK${amt:.2f} ({pct:.1f}%)")
+        fc.print("\nTOP 3 CATEGORIES")
+        fc.print("-" * 40)
+        for i, (cat, amt, pct) in enumerate(top, 1):
+            fc.print(f"  {i}. {cat}: HK${amt:.2f} ({pct:.1f}%)")
 
-    fc.print("\nACTIVE ALERTS")
-    fc.print("-" * 40)
-    if alerts:
-        for a in alerts:
-            fc.print(f"  • {a['message']}")
-    else:
-        fc.print("  No active alerts.")
+        fc.print("\nACTIVE ALERTS")
+        fc.print("-" * 40)
+        if alerts:
+            for a in alerts:
+                fc.print(f"  • {a['message']}")
+        else:
+            fc.print("  No active alerts.")
 
-    fc.print("\n" + "=" * 72)
-    fc.file.close()
+        fc.print("\n" + "=" * 72)
     return filename

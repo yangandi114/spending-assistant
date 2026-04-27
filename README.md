@@ -10,16 +10,14 @@
 
 | Document | Purpose |
 |----------|---------|
-| [GUIDELINES.md](GUIDELINES.md) | Official assignment spec |
-| [PLAN.md](PLAN.md) | Timeline, research, roles |
-| [FEATURES.md](FEATURES.md) | Feature list |
-| [UI.md](UI.md) | UI/interface design specs |
-| [CLAUDE.md](CLAUDE.md) | Code conventions |
+| [MAIN_DOCUMENTATION.md](MAIN_DOCUMENTATION.md) | Full module & function reference |
+| [prompts.md](prompts.md) | AI prompts used during development |
+| [requirements.txt](requirements.txt) | Python dependencies |
 
 ## 🗂️ Project Structure
 
 ```
-comp1110projectlocal/
+./
 ├── main.py              ← Entry point; questionary menu loop
 ├── display.py           ← All rich rendering (tables, panels, alerts)
 ├── analytics.py         ← Statistics, trends, forecasting, heatmap
@@ -42,30 +40,58 @@ comp1110projectlocal/
 
 ### Module responsibilities
 
-| File | Key functions |
-|------|--------------|
-| `main.py` | `main()`, `add_transaction_flow()`, `view_transactions_flow()`, `edit_delete_flow()`, `statistics_flow()`, `alerts_flow()`, `manage_budget_rules_flow()`, `manage_categories_flow()`, `settings_flow()`, `export_flow()` |
-| `display.py` | `print_transaction_table()`, `print_statistics()`, `print_top_categories()`, `print_trends()`, `print_alerts()`, `print_budget_bars()`, `print_budget_rules()`, `print_savings_goal()`, `print_heatmap()`, `print_forecast()`, `export_report()` |
-| `analytics.py` | `filter_by_date()`, `get_totals_by_category()`, `get_top_n_categories()`, `get_spending_trends()`, `get_daily_totals_by_category()`, `get_consecutive_overspend()`, `get_savings_progress()`, `linear_forecast()`, `spending_heatmap()` |
-| `alerts.py` | `check_daily_caps()`, `check_percentage_thresholds()`, `check_consecutive_overspend()`, `check_uncategorized()`, `get_all_alerts()` |
-| `data.py` | `load_transactions()`, `save_transactions()`, `load_budget_rules()`, `save_budget_rules()`, `load_config()`, `save_config()`, `get_next_id()`, `ensure_dirs()` |
-| `validator.py` | `validate_date()`, `validate_amount()`, `validate_category()`, `validate_description()` |
+| File | Author(s) | Key functions |
+|------|-----------|--------------|
+| `main.py` | Yang Andi, Mao Yicheng | `main()`, `add_transaction_flow()`, `view_transactions_flow()`, `edit_delete_flow()`, `statistics_flow()`, `alerts_flow()`, `manage_budget_rules_flow()`, `manage_categories_flow()`, `settings_flow()`, `export_flow()` |
+| `display.py` | Yang Andi, Mao Yicheng | `print_transaction_table()`, `print_statistics()`, `print_top_categories()`, `print_trends()`, `print_alerts()`, `print_budget_bars()`, `print_budget_rules()`, `print_savings_goal()`, `print_heatmap()`, `print_forecast()`, `print_outliers()`, `export_report()` |
+| `analytics.py` | Mao Yicheng, Yang Andi | `filter_by_date()`, `get_totals_by_category()`, `get_top_n_categories()`, `get_spending_trends()`, `get_daily_totals_by_category()`, `get_consecutive_overspend()`, `get_savings_progress()`, `linear_forecast()`, `spending_heatmap()`, `get_spending_outliers()` |
+| `alerts.py` | Mao Yicheng, Yang Andi | `check_daily_caps()`, `check_percentage_thresholds()`, `check_consecutive_overspend()`, `check_forecast_alerts()`, `check_uncategorized()`, `get_all_alerts()` |
+| `data.py` | Yang Andi, Yao Junzhu | `fetch_exchange_rates()`, `ensure_dirs()`, `load_transactions()`, `save_transactions()`, `load_budget_rules()`, `save_budget_rules()`, `load_config()`, `save_config()`, `get_next_id()` |
+| `validator.py` | Yang Andi | `validate_date()`, `validate_amount()`, `validate_category()`, `validate_description()` |
+| `tests/test_generator.py` | Wang Ziyi | `generate_transactions()`, `generate_budget_rules()`, `generate_config()`, `print_test_summary()` |
 
 ### Data schemas
 
-**Transaction**
+**Transaction** (`data/transactions.json` — array of objects)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | int | Auto-incremented unique ID |
+| `date` | string | `YYYY-MM-DD` format |
+| `amount` | float | Positive number in the transaction's original currency |
+| `currency` | string | One of the supported currency codes (e.g. `"HKD"`, `"USD"`) |
+| `category` | string | Must match a category in `config.json` |
+| `description` | string | Non-empty user-entered label |
+
 ```json
 {"id": 1, "date": "2026-04-01", "amount": 50.5, "currency": "HKD", "category": "Food", "description": "Lunch"}
 ```
 
-**Budget rule**
+**Budget rule** (`data/budget_rules.json` — array of objects, all cap fields optional)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `category` | string | Category the rule applies to |
+| `daily_cap` | float | Max HKD spend per day (optional) |
+| `monthly_cap` | float | Max HKD spend per month (optional) |
+| `pct_threshold` | int | Alert if category exceeds this % of total spending (optional) |
+
 ```json
 {"category": "Food", "daily_cap": 80, "monthly_cap": 2400, "pct_threshold": 35}
 ```
 
-**Config**
+**Config** (`config/config.json`)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `categories` | list | User-editable list of valid category names |
+| `currencies` | dict | Map of currency code → HKD rate (how many HKD per 1 unit) |
+| `default_currency` | string | Default currency shown during transaction entry |
+| `savings_goal` | float | Monthly savings target in HKD |
+| `income` | float | Monthly income in HKD (used for savings progress) |
+
 ```json
-{"categories": [...], "currencies": {"HKD": 1.0, "USD": 7.78}, "default_currency": "HKD", "savings_goal": 500, "income": 0}
+{"categories": ["Food", "Transport", ...], "currencies": {"HKD": 1.0, "USD": 7.83}, "default_currency": "HKD", "savings_goal": 2000.0, "income": 12000.0}
 ```
 
 ### Run
@@ -120,4 +146,4 @@ python tests/test_generator.py
 
 ---
 
-**Start with**: [GUIDELINES.md](GUIDELINES.md) for the full spec, [UI.md](UI.md) for interface design
+**Start with**: [MAIN_DOCUMENTATION.md](MAIN_DOCUMENTATION.md) for the full module reference, [prompts.md](prompts.md) for AI usage disclosure
