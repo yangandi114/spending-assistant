@@ -1,7 +1,6 @@
 # Module: data.py — File I/O, Config & Data Persistence
-# Primary Author: Yao Junzhu (all core I/O, config management, live exchange rates)
-# Attribution Note: fetch_exchange_rates() concept originated from Yang Andi (observed hard-coded rates don't update during travel)
-
+# Primary Author: Yao Junzhu (all core I/O, config management)
+# Secondary Author: Yang Andi (fetch_exchange_rates function)
 import json
 import os
 import urllib.request
