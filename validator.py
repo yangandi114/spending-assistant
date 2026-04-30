@@ -1,4 +1,4 @@
-# Author: Yang Andi （data validation)
+# Author: Yang Andi
 
 from datetime import datetime
 

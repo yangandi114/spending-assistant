@@ -1,9 +1,12 @@
-# Author: YAO Junzhu (data.py), YANG Andi (fetch_exchange_rates function)
+# Module: data.py — File I/O, Config & Data Persistence
+# Primary Author: Yao Junzhu (all core I/O, config management, live exchange rates)
+# Attribution Note: fetch_exchange_rates() concept originated from Yang Andi (observed hard-coded rates don't update during travel)
+
 import json
 import os
 import urllib.request
 
-# directory and file paths
+# ── directory and file paths ──
 
 DATA_DIR = "data"
 CONFIG_DIR = "config"
@@ -14,7 +17,7 @@ TRANSACTIONS_FILE = os.path.join(DATA_DIR, "transactions.json")
 BUDGET_RULES_FILE = os.path.join(DATA_DIR, "budget_rules.json")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
 
-# default configuration
+# ── default configuration ──
 
 DEFAULT_CONFIG = {
     "categories": ["Food", "Transport", "Personal", "Entertainment", "Health", "Utilities"],
@@ -33,7 +36,7 @@ DEFAULT_CONFIG = {
     "income": 0.0,
 }
 
-# ISO currency code mapping
+# ── ISO currency code mapping ──
 
 # "NTD" is a common nickname; the official ISO code is "TWD"
 _ISO = {
@@ -74,7 +77,7 @@ def fetch_exchange_rates():
 
 
 def ensure_dirs():
-    # Create the required directories if they do not already exist.
+    """Create the required directories if they do not already exist."""
     for d in [DATA_DIR, CONFIG_DIR, OUTPUTS_DIR]:
         os.makedirs(d, exist_ok=True)  # exist_ok=True means no error if already exists
 
@@ -98,28 +101,28 @@ def _load_json(filepath, default):
 
 
 def _save_json(filepath, data):
-    # Write a Python object to a file as formatted JSON.
+    """Write a Python object to a file as formatted JSON."""
     with open(filepath, "w") as f:
         json.dump(data, f, indent=2)
 
 
 def load_transactions():
-    # Load the transactions list from disk. Returns [] if no file exists.
+    """Load the transactions list from disk. Returns [] if no file exists."""
     return _load_json(TRANSACTIONS_FILE, [])
 
 
 def save_transactions(transactions):
-    # Save the transactions list to disk.
+    """Save the transactions list to disk."""
     _save_json(TRANSACTIONS_FILE, transactions)
 
 
 def load_budget_rules():
-    # Load the budget rules list from disk. Returns [] if no file exists.
+    """Load the budget rules list from disk. Returns [] if no file exists."""
     return _load_json(BUDGET_RULES_FILE, [])
 
 
 def save_budget_rules(rules):
-    # Save the budget rules list to disk.
+    """Save the budget rules list to disk."""
     _save_json(BUDGET_RULES_FILE, rules)
 
 
@@ -136,7 +139,7 @@ def load_config():
 
 
 def save_config(config):
-    # Save app configuration to disk.
+    """Save app configuration to disk."""
     _save_json(CONFIG_FILE, config)
 
 

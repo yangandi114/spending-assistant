@@ -1,5 +1,6 @@
-# Authors: Yang Andi, Mao Yicheng
-# Andi wrote all display functions; Mao Yicheng wrote print_outliers
+# Module: display.py — Rich Output Rendering
+# Primary Author: Yang Andi (print_header, print_transaction_table, print_statistics, print_top_categories, print_trends, print_alerts, print_budget_bars, print_budget_rules, print_savings_goal, print_forecast, print_heatmap, export_report)
+# Co-author: Mao Yicheng (print_outliers)
 
 import calendar
 import os

@@ -1,4 +1,7 @@
-# Authors: Yang Andi, Mao Yicheng
+# Module: main.py — CLI Menu & Orchestration
+# Primary Author: Yang Andi (all flows, menu dispatch, input validation wrappers)
+# Co-author: Yao Junzhu (transaction/budget/config I/O integrated here)
+# Co-author: Mao Yicheng (analytics & alerts functions dispatched from here)
 
 import questionary
 from questionary import Separator, Style

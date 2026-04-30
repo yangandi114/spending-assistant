@@ -1,5 +1,7 @@
+#!/usr/bin/env python3
 # Author: Wang Ziyi
-# Generates 120+ realistic transactions
+# Test Data Generator for Personal Budget Assistant
+# Generates 120+ realistic transactions with baked-in edge cases.
 
 import json
 import os

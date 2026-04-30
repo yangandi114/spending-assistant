@@ -1,16 +1,18 @@
-# Authors: Mao Yicheng, Yang Andi
+# Module: analytics.py — Statistics & Aggregations
+# Primary Authors: Mao Yicheng (get_top_n_categories, get_consecutive_overspend, linear_forecast, spending_heatmap, get_spending_outliers)
+#                  Yang Andi (parse_date, filter_by_date, get_totals_by_category, get_daily_totals_by_category, get_spending_trends, get_savings_progress)
 
 import calendar
 from collections import defaultdict
 from datetime import datetime, timedelta
 
 
-# Turn a YYYY-MM-DD string into a datetime.
+# By Yang Andi: Turn a YYYY-MM-DD string into a datetime.
 def parse_date(date_str):
     return datetime.strptime(date_str, "%Y-%m-%d")
 
 
-# Keep only transactions in the given date range.
+# By Yang Andi: Keep only transactions in the given date range.
 def filter_by_date(transactions, start=None, end=None):
     result = []
     for t in transactions:
@@ -23,7 +25,7 @@ def filter_by_date(transactions, start=None, end=None):
     return result
 
 
-# Total up spending per category (optional date filter).
+# By Yang Andi: Total up spending per category (optional date filter).
 def get_totals_by_category(transactions, start=None, end=None):
     filtered = filter_by_date(transactions, start, end)
     totals = defaultdict(float)
@@ -32,7 +34,7 @@ def get_totals_by_category(transactions, start=None, end=None):
     return dict(totals)
 
 
-# Get the top N categories by spending, with % share.
+# By Mao Yicheng: Get the top N categories by spending, with % share.
 def get_top_n_categories(transactions, n=3, start=None, end=None):
     totals = get_totals_by_category(transactions, start, end)
     total = sum(totals.values())
@@ -43,7 +45,7 @@ def get_top_n_categories(transactions, n=3, start=None, end=None):
     ]
 
 
-# Compare 7-day vs 30-day daily averages.
+# By Yang Andi: Compare 7-day vs 30-day daily averages.
 def get_spending_trends(transactions):
     now = datetime.now()
     last_7 = filter_by_date(transactions, now - timedelta(days=7), now)
@@ -53,7 +55,7 @@ def get_spending_trends(transactions):
     return avg_7, avg_30
 
 
-# Daily totals for one category.
+# By Yang Andi: Daily totals for one category.
 def get_daily_totals_by_category(transactions, category):
     daily = defaultdict(float)
     for t in transactions:
@@ -62,7 +64,7 @@ def get_daily_totals_by_category(transactions, category):
     return dict(daily)
 
 
-# Count consecutive over-cap days for a category (starting from the most recent).
+# By Mao Yicheng: Count consecutive over-cap days for a category (starting from the most recent).
 def get_consecutive_overspend(transactions, category, daily_cap):
     daily = get_daily_totals_by_category(transactions, category)
     sorted_dates = sorted(daily.keys(), reverse=True)
@@ -75,7 +77,7 @@ def get_consecutive_overspend(transactions, category, daily_cap):
     return streak
 
 
-# This month's spending + how much is left toward the savings goal.
+# By Yang Andi: This month's spending + how much is left toward the savings goal.
 def get_savings_progress(transactions, savings_goal, income):
     now = datetime.now()
     start = datetime(now.year, now.month, 1)
@@ -86,7 +88,7 @@ def get_savings_progress(transactions, savings_goal, income):
     return spent, remaining, savings
 
 
-# Guess this month's total by extrapolating from the daily average so far.
+# By Mao Yicheng: Guess this month's total by extrapolating from the daily average so far.
 def linear_forecast(transactions):
     now = datetime.now()
     start = datetime(now.year, now.month, 1)
@@ -99,7 +101,7 @@ def linear_forecast(transactions):
     return (spent / days_elapsed) * days_in_month
 
 
-# Build heatmap symbols per day by comparing to the monthly average.
+# By Mao Yicheng: Build heatmap symbols per day by comparing to the monthly average.
 def spending_heatmap(transactions):
     now = datetime.now()
     start = datetime(now.year, now.month, 1)
@@ -128,7 +130,7 @@ def spending_heatmap(transactions):
     return result
 
 
-# Grab the top X% biggest transactions (default 5%). By Mao Yicheng.
+# By Mao Yicheng: Grab the top X% biggest transactions (default 5%).
 def get_spending_outliers(transactions, top_percent=0.05):
     if not transactions:
         return []

@@ -1,4 +1,6 @@
-# Authors: Mao Yicheng, Yang Andi
+# Module: alerts.py — Budget Rule Checking
+# Primary Authors: Mao Yicheng (check_daily_caps, check_percentage_thresholds, check_consecutive_overspend)
+#                  Yang Andi (check_forecast_alerts, check_uncategorized, get_all_alerts)
 
 from datetime import datetime
 from analytics import (
@@ -9,7 +11,7 @@ from analytics import (
 )
 
 
-# Check if today's spending in any category went over the daily cap.
+# By Mao Yicheng: Check if today's spending in any category went over the daily cap.
 def check_daily_caps(transactions, budget_rules):
     today = datetime.now().strftime("%Y-%m-%d")
     alerts = []
@@ -31,7 +33,7 @@ def check_daily_caps(transactions, budget_rules):
     return alerts
 
 
-# Flag categories that take up too much of the total spending.
+# By Mao Yicheng: Flag categories that take up too much of the total spending.
 def check_percentage_thresholds(transactions, budget_rules):
     totals = get_totals_by_category(transactions)
     total = sum(totals.values())
@@ -55,7 +57,7 @@ def check_percentage_thresholds(transactions, budget_rules):
     return alerts
 
 
-# Warn if a category has been over-budget for 3+ days in a row.
+# By Mao Yicheng: Warn if a category has been over-budget for 3+ days in a row.
 def check_consecutive_overspend(transactions, budget_rules):
     alerts = []
     for rule in budget_rules:
@@ -74,7 +76,7 @@ def check_consecutive_overspend(transactions, budget_rules):
     return alerts
 
 
-# Project this month's total spend and warn early if we're heading over budget.
+# By Yang Andi: Project this month's total spend and warn early if we're heading over budget.
 def check_forecast_alerts(transactions, budget_rules):
     monthly_limit = sum(r["monthly_cap"] for r in budget_rules if "monthly_cap" in r)
     if monthly_limit <= 0:
@@ -89,7 +91,7 @@ def check_forecast_alerts(transactions, budget_rules):
     return alerts
 
 
-# Find transactions with missing or unknown categories.
+# By Yang Andi: Find transactions with missing or unknown categories.
 def check_uncategorized(transactions, categories):
     alerts = []
     for t in transactions:
@@ -104,7 +106,7 @@ def check_uncategorized(transactions, categories):
     return alerts
 
 
-# Collect all alerts into one list for display.
+# By Yang Andi: Collect all alerts into one list for display.
 def get_all_alerts(transactions, budget_rules, categories):
     alerts = []
     alerts += check_daily_caps(transactions, budget_rules)
