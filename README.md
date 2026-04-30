@@ -10,7 +10,6 @@
 | Document | Purpose |
 |----------|---------|
 | [MAIN_DOCUMENTATION.md](MAIN_DOCUMENTATION.md) | Full design documentation |
-| [prompts.md](prompts.md) | AI prompt log (per assignment requirement) |
 | [PLAN.md](PLAN.md) | Timeline, research, roles |
 | [FEATURES.md](FEATURES.md) | Feature list |
 | [UI.md](UI.md) | UI design |
