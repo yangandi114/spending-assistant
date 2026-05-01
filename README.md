@@ -10,7 +10,7 @@
 | Document | Purpose |
 |----------|---------|
 | [DOCUMENTATION.md](DOCUMENTATION.md) | Documentation |
-| [PLAN.md](PLAN.md) | research, roles |
+| [PLAN.md](PLAN.md) | Project Plan |
 | [FEATURES.md](FEATURES.md) | Feature list |
 | [UI.md](UI.md) | UI design |
 
