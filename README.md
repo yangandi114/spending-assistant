@@ -92,15 +92,6 @@ python tests/test_generator.py
 
 ---
 
-## Timeline
-
-- **Phase 1** (Mar 15–23): Planning & research ✅
-- **Phase 2** (Mar 24–Apr 12): Architecture & implementation ✅
-- **Phase 3** (Apr 13–19): Testing & evaluation ✅
-- **Phase 4** (Apr 20–May 2): Final deliverables & reports 🔄
-
----
-
 ## Tech Stack
 
 - **Language**: Python 3.x (text-based CLI)
