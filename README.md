@@ -10,7 +10,7 @@
 | Document | Purpose |
 |----------|---------|
 | [DOCUMENTATION.md](DOCUMENTATION.md) | Documentation |
-| [PLAN.md](PLAN.md) | Timeline, research, roles |
+| [PLAN.md](PLAN.md) | research, roles |
 | [FEATURES.md](FEATURES.md) | Feature list |
 | [UI.md](UI.md) | UI design |
 
@@ -35,8 +35,8 @@ comp1110projectlocal/
 │   └── test_generator.py ← 120+ fake transactions with edge cases (Wang Ziyi)
 │
 ├── requirements.txt
-├── prompts.md            ← AI prompt log (per assignment requirement)
-├── MAIN_DOCUMENTATION.md ← Full design documentation
+├── DOCUMENTATION.md ← Code documentation
+├── UI.md ← UI documentation
 └── README.md
 ```
 
