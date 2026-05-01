@@ -14,7 +14,7 @@
 | [FEATURES.md](FEATURES.md) | Feature list |
 | [UI.md](UI.md) | UI design |
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 comp1110projectlocal/
@@ -80,7 +80,7 @@ python tests/test_generator.py
 
 ---
 
-## 👥 Team Roles
+## Team Roles
 
 | Role | Lead | ID |
 |------|------|-----|
