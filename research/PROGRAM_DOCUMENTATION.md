@@ -3,20 +3,22 @@
 **Course:** HKU 2025–2026 Sem 2, COMP1110 Group B12
 **Repository:** [github.com/yangandi114/spending-assistant](https://github.com/yangandi114/spending-assistant)
 **Topic:** A — Personal Budget & Spending Assistant
-**Document version:** 2.0 — April 2026
+**Document version:** 2.1 — 2 May 2026
 
-This document consolidates the team's design notes (`MAIN_DOCUMENTATION.md`), the *Competitive Analysis & Requirements Specification* report, and the live source code on GitHub into a single user-facing reference. It describes what the program does, how to run it, what it reads and writes, and how each requirement from the team's specification is realised in code.
+This document consolidates the team's design notes (`../DOCUMENTATION.md`), the *Competitive Analysis & Requirements Specification* report (`competitive_analysis_report_EN.docx`), and the live source code on GitHub into a single user-facing reference. It describes what the program does, how to run it, what it reads and writes, and how each requirement from the team's specification is realised in code.
 
 ---
 
 ## 1. Team & Roles
 
+(Listed in the same order as `PLAN.md` to keep canonical ordering across documents.)
+
 | Role | Member | Student ID |
 |------|--------|------------|
-| Project Lead & UI Design | Yang Andi | 3036587092 |
 | Algorithm & Logic | Mao Yicheng | 3036483040 |
 | Research & Documentation | Tao Xinran | 3036525393 |
 | Testing & Evaluation | Wang Ziyi | 3036484020 |
+| Project Lead & UI Design | Yang Andi | 3036587092 |
 | Data Modeling & File Management | Yao Junzhu | 3036590427 |
 
 Per-module authorship recorded in the source files: `main.py` and `validator.py` (Yang Andi); `analytics.py`, `alerts.py`, and the `print_outliers` function in `display.py` (Mao Yicheng); the rest of `display.py` (Yang Andi); `data.py` (Yao Junzhu, with `fetch_exchange_rates` by Yang Andi); the test data generator under `tests/` (Wang Ziyi); the *Competitive Analysis & Requirements Specification* report (Tao Xinran).
@@ -26,7 +28,7 @@ Per-module authorship recorded in the source files: `main.py` and `validator.py`
 - **Phase 1 (Mar 15 – Mar 23):** Planning & research — *complete.*
 - **Phase 2 (Mar 24 – Apr 12):** Architecture & implementation — *complete.*
 - **Phase 3 (Apr 13 – Apr 19):** Testing & evaluation — *complete.*
-- **Phase 4 (Apr 20 – May 2):** Final deliverables & reports — *in progress.*
+- **Phase 4 (Apr 20 – May 2):** Final deliverables & reports — *complete (submission day: 2 May 2026).*
 
 ---
 
@@ -54,9 +56,9 @@ The program is organised into six Python modules with strict layering and no cir
 | `main.py` | CLI entry point and orchestrator. Hosts the interactive menu loop and routes each menu choice to a dedicated *flow* function. |
 | `data.py` | File-I/O layer. Reads and writes JSON files; fetches live FX rates from `open.er-api.com`. All other modules go through this layer. |
 | `validator.py` | Boundary input validation (date, amount, description, category). Returns booleans; never raises. |
-| `analytics.py` | Pure computation layer — filtering, totals, trends, forecast, heatmap, outliers. No I/O, no internal imports. |
-| `alerts.py` | Rule-checking layer. Evaluates transactions against budget rules and returns structured alert dictionaries. |
-| `display.py` | Rendering layer. All `rich`-formatted tables, panels, progress bars, and the plain-text report exporter live here. |
+| `analytics.py` | Pure computation layer — filtering, totals, trends, forecast, heatmap, outliers (`get_spending_outliers`). No I/O, no internal imports. |
+| `alerts.py` | Rule-checking layer. Evaluates transactions against budget rules and returns structured alert dictionaries. Includes `check_daily_caps`, `check_percentage_thresholds`, `check_consecutive_overspend`, `check_forecast_alerts`, `check_uncategorized`, and the `get_all_alerts` aggregator. |
+| `display.py` | Rendering layer. All `rich`-formatted tables, panels, progress bars, the outlier table (`print_outliers`), and the plain-text report exporter live here. |
 
 Data flow on every interaction follows a one-way path: user input → `validator.py` → `data.py` (load) → `analytics.py` / `alerts.py` (compute) → `display.py` (render) → `data.py` (save).
 
@@ -337,7 +339,7 @@ This section maps each requirement from the team's *Competitive Analysis & Requi
 | ID | Domain | Status | Implementation |
 |----|--------|--------|----------------|
 | FR-01 | Transaction Entry | ✅ | `add_transaction_flow` in `main.py`; one cohesive flow with auto-defaults for date and currency. (Note: spec describes a `budget add ...` one-line CLI; this delivery uses an interactive prompt sequence instead — functionally equivalent for course scope.) |
-| FR-02 | Transaction Entry | ✅ | The same `add_transaction_flow` *is* the interactive mode (this delivery has no separate one-line mode). |
+| FR-02 | Transaction Entry | ✅ | Interactive prompt mode is delivered via `add_transaction_flow`. The spec also listed an alternative one-line `budget add ...` invocation; only the interactive form ships. |
 | FR-03 | Transaction Entry | ❌ | CSV import not implemented. Marked Could-list (C-01) in the spec. |
 | FR-04 | Transaction Query | 🟡 | `view_transactions_flow` supports filtering by date range, single category, or keyword. Spec also names tag, currency, and amount range — these are not exposed (no tag system was implemented). |
 | FR-05 | Transaction Query | ✅ | `print_transaction_table` (paginated `rich` table with colour highlighting). |
@@ -380,12 +382,14 @@ This section maps each requirement from the team's *Competitive Analysis & Requi
 
 ### 8.3 MoSCoW delivery status
 
+**Summary at a glance:** of the 10 Must items, 5 are fully delivered, 3 are partial, and 2 (CSV+MD export and the interactive init wizard) are deferred to the Could bucket — their absence is explicitly acknowledged here rather than buried in the per-row marks. All 5 Won't items are correctly absent from the build.
+
 | Bucket | Items | Delivered |
 |--------|-------|-----------|
 | **Must (10)** | M-01 Basic entry; M-02 Querying; M-03 Categories; M-04 Caps; M-05 Multi-CCY core; M-06 Monthly summary; M-07 Three-level alerts; M-08 CSV+MD export; M-09 JSON + backup; M-10 Init wizard | M-01 ✅ · M-02 🟡 · M-03 ✅ · M-04 ✅ · M-05 🟡 · M-06 ✅ · M-07 🟡 · M-08 ❌ · M-09 🟡 · M-10 ❌ |
 | **Should (6)** | Tag system; Subscriptions; Rolling-window alerts; Home-CCY switching; Alert history; JSON / plain-text export | All ❌ except plain-text export ✅ |
 | **Could (6)** | Historical CSV import; Sinking fund; YoY comparison; Currency dashboard; Progress bars; Colour-blind palette | Progress bars ✅ (`print_budget_bars`); rest ❌ |
-| **Won't** | Bank sync; GUI; Investment tracking; AI categorisation; Multi-user sync | All correctly absent |
+| **Won't (5)** | Bank sync; GUI; Investment tracking; AI categorisation; Multi-user sync | All correctly absent |
 
 ---
 
@@ -399,11 +403,9 @@ The list below is based on a review of the code at the time of writing. Verify a
 
 3. **`validate_category` is dead code.** Defined in `validator.py` but never called — categories are always menu-selected, never typed. Either remove it or wire it into the (future) CSV import flow.
 
-4. **Doc/code drift on report filename.** `MAIN_DOCUMENTATION.md` describes `report_YYYYMMDD_HHMMSS.txt`; the code produces `report_YYYY-MM-DD_HHMMSS.txt` (with hyphens between Y/M/D). Pick one and align both.
+4. **Minor doc drift on report filename casing.** The code (`display.py:295`) produces `report_YYYY-MM-DD_HHMMSS.txt`. `DOCUMENTATION.md` matches this exactly; `UI.md` writes the same pattern with a lowercase `HHmmss` segment. Cosmetic — pick one casing and align `UI.md` to the code form.
 
 5. **No transactional file writes.** `_save_json` opens the target file directly for writing, so a crash or kill mid-write can leave a partial file. Loaders gracefully fall back to defaults on malformed JSON, which limits the blast radius but still loses the data. **Suggested fix:** write to a temp file in the same directory, then `os.replace()` onto the destination — atomic on POSIX and modern Windows.
-
-> *Resolved in current `main` branch:* the previous entry-point bug — where `main()` was called from inside its own body without an `if __name__ == "__main__":` guard — has been corrected on GitHub. Earlier snapshots may still exhibit it.
 
 ---
 
@@ -411,29 +413,32 @@ The list below is based on a review of the code at the time of writing. Verify a
 
 ```
 spending-assistant/
-├── main.py                  ← CLI orchestrator
-├── data.py                  ← File I/O + FX fetch
-├── display.py               ← rich rendering + report export
-├── validator.py             ← Input validation
-├── alerts.py                ← Budget rule checks
-├── analytics.py             ← Pure computation
-├── requirements.txt         ← Pip dependencies (questionary, rich)
-├── README.md                ← Quick reference + structure
-├── MAIN_DOCUMENTATION.md    ← Module-level API reference
-├── DOCUMENTATION.md         ← Higher-level design write-up
-├── FEATURES.md              ← Feature list
-├── PLAN.md                  ← Timeline & roles
-├── UI.md                    ← UI design notes
-├── prompts.md               ← AI prompt log (per assignment requirement)
-├── roles.md                 ← Role definitions
+├── main.py                       ← CLI orchestrator
+├── data.py                       ← File I/O + FX fetch
+├── display.py                    ← rich rendering + report export
+├── validator.py                  ← Input validation
+├── alerts.py                     ← Budget rule checks
+├── analytics.py                  ← Pure computation
+├── requirements.txt              ← Pip dependencies (questionary, rich)
+├── README.md                     ← Quick reference + structure
+├── DOCUMENTATION.md              ← Module-level API reference
+├── FEATURES.md                   ← Feature list
+├── PLAN.md                       ← Timeline & roles
+├── UI.md                         ← UI design notes
+├── roles.md                      ← Role definitions
 ├── config/
-│   └── config.json          ← Categories, FX rates, income, savings goal
+│   └── config.json               ← Categories, FX rates, income, savings goal
 ├── data/
-│   ├── transactions.json    ← Transaction ledger
-│   └── budget_rules.json    ← Per-category rules
-├── outputs/                 ← Generated text reports
-└── tests/
-    └── test_generator.py    ← 120+ synthetic transactions (edge cases)
+│   ├── transactions.json         ← Transaction ledger
+│   └── budget_rules.json         ← Per-category rules
+├── outputs/                      ← Generated text reports
+├── tests/
+│   └── test_generator.py         ← 120+ synthetic transactions (edge cases)
+└── research/
+    ├── README.md                 ← Index for the research artefacts
+    ├── PROGRAM_DOCUMENTATION.md  ← This document
+    └── competitive_analysis_report_EN.docx
+                                  ← Competitive Analysis & Requirements Specification
 ```
 
 ---
